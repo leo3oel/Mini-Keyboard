@@ -4,6 +4,7 @@
 #endif
 
 #include <Keyboard.h>
+#include <Mouse.h>
 #include "password.h"
 
 #define CODELENGTH 6
@@ -14,7 +15,7 @@ extern String username;
 short code[CODELENGTH] = {1, 2, 1, 3, 0, 1};
 
 // Inputs
-DigitalPin enterpassword(5, INPUT), taskmanager(3, INPUT), lock(2, INPUT), something(4, INPUT);
+DigitalPin enterpassword(5, INPUT), taskmanager(3, INPUT), lock(2, INPUT), massaker(4, INPUT);
 // Outputs
 DigitalPin codeledhigh(7, OUTPUT);
 
@@ -102,7 +103,7 @@ void setup()
 {
     // Initialize Arduino
     Keyboard.begin();
-    Serial.begin(9600);
+    Mouse.begin();
 }
 
 void loop()
@@ -110,17 +111,14 @@ void loop()
     // MAIN
     if (enterpassword.posEDGE())
     {
-        Serial.print("Started");
-        if (checkcode(code, codeledhigh, enterpassword, something, taskmanager, lock))
+        if (checkcode(code, codeledhigh, enterpassword, massaker, taskmanager, lock))
         {
             Keyboard.print(username);
             pressKey(KEY_TAB);
             Keyboard.print(password);
             pressKey(KEY_TAB);
             pressKey(KEY_RETURN);
-            Serial.print("printed code");
         }
-        Serial.println("exited checking");
     }
 
     if (taskmanager.posEDGE())
@@ -140,5 +138,34 @@ void loop()
         Keyboard.releaseAll();
     }
 
+    if(massaker.posEDGE())
+    {
+        while(massaker.isHIGH())
+        {
+            // wait till low
+        } 
+        while(massaker.isLOW())
+        {
+            bool pos = rand()%2;
+            if(pos)
+                Mouse.move((rand()%25), (rand()%5),0);
+            else
+                Mouse.move(-(rand()%15), -(rand()%15),0);
+            if(millis()%3000<40)
+            {
+                short random = rand()%4;
+                switch (random)
+                {
+                case 0: break;
+                case 1: Mouse.click(MOUSE_LEFT); break;
+                case 2: Mouse.click(MOUSE_RIGHT); break;
+                case 3: Mouse.click(MOUSE_MIDDLE); break;
+                }
+            }
+
+            delay(50);
+        }
+        while(massaker.isHIGH()){} // wait till low again
+    }
     delay(100);
 }
