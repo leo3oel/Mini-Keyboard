@@ -4,6 +4,9 @@
 #endif
 
 #include <Keyboard.h>
+#include "password.h"
+
+extern String password, username;
 
 DigitalPin password(4, INPUT), taskmanager(3, INPUT), lock(2, INPUT);
 
@@ -25,9 +28,9 @@ void loop()
     //MAIN
     if(password.posEDGE())
     {
-        Keyboard.print("username");
+        Keyboard.print(username);
         pressKey(KEY_TAB);
-        Keyboard.print("password");
+        Keyboard.print(password);
         pressKey(KEY_TAB);
         pressKey(KEY_RETURN);
     }
